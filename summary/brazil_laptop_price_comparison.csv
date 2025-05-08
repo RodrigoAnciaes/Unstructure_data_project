@@ -1,0 +1,15 @@
+timestamp,product,marketplace,title,price,url
+2025-05-08 18:43:56.257690,Laptop,KaBuM,Not found,Not found,https://www.kabum.com.br/busca/laptop
+2025-05-08 18:44:02.329144,Laptop,Magazine Luiza,Not found,Not found,https://www.magazineluiza.com.br/busca/laptop/
+2025-05-08 18:44:10.136267,Laptop,Mercado Livre (Search 1),Not found,106,https://lista.mercadolivre.com.br/laptop#D[A:laptop]
+2025-05-08 18:44:17.171238,Laptop,Mercado Livre (Search 2),Not found,106,https://lista.mercadolivre.com.br/laptop?sb=all_mercadolibre#D[A:laptop]
+2025-05-08 18:44:21.996760,Laptop,Lenovo Brasil,Not found,Not found,https://www.lenovo.com/br/pt/search?fq=&text=laptop&rows=20&sort=relevance
+2025-05-08 18:44:27.939442,Laptop,Dell Brasil,Notebook Inspiron 15,"Preço
+R$ 3.598,00",https://www.dell.com/pt-br/search/laptop
+2025-05-08 18:44:35.956049,Notebook,KaBuM,Not found,Not found,https://www.kabum.com.br/busca/notebook
+2025-05-08 18:44:44.806930,Notebook,Magazine Luiza,Not found,Not found,https://www.magazineluiza.com.br/busca/notebook/
+2025-05-08 18:44:50.426968,Notebook,Mercado Livre (Search 1),Not found,3.199,https://lista.mercadolivre.com.br/notebook#D[A:notebook]
+2025-05-08 18:44:57.487381,Notebook,Mercado Livre (Search 2),Not found,3.199,https://lista.mercadolivre.com.br/notebook?sb=all_mercadolibre#D[A:notebook]
+2025-05-08 18:45:02.341717,Notebook,Lenovo Brasil,Not found,Not found,https://www.lenovo.com/br/pt/search?fq=&text=notebook&rows=20&sort=relevance
+2025-05-08 18:45:09.119149,Notebook,Dell Brasil,Notebook Inspiron 15,"Preço
+R$ 3.598,00",https://www.dell.com/pt-br/search/notebook
