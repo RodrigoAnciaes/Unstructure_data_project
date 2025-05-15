@@ -27,13 +27,13 @@ marketplaces = [
     {
         "name": "KaBuM",
         "search_url": "https://www.kabum.com.br/busca/{}",
-        "price_selector": ".sc-6889e656-2.bHcxc",
+        "price_selector": ".sc-57f0fd6e-2.hjJfoh.priceCard",  # Updated selector
         "title_selector": ".sc-d99ca57-0.iRparH",
     },
     {
         "name": "Magazine Luiza",
         "search_url": "https://www.magazineluiza.com.br/busca/{}/",
-        "price_selector": ".price-template__text",
+        "price_selector": "[data-testid='price-value']",  # Updated selector
         "title_selector": ".productTitle",
     },
     {
@@ -51,7 +51,7 @@ marketplaces = [
     {
         "name": "Lenovo Brasil",
         "search_url": "https://www.lenovo.com/br/pt/search?fq=&text={}&rows=20&sort=relevance",
-        "price_selector": ".final-price",
+        "price_selector": ".price-title",  # Updated selector
         "title_selector": ".product-name",
     },
     {
