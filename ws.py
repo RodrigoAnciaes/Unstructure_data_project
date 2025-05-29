@@ -290,8 +290,8 @@ def scrape_single_marketplace(driver, marketplace, product_name, product_display
         screenshot_filename = f"debug/{marketplace['name'].replace(' ', '_')}_{product_name}_screenshot.png"
         driver.save_screenshot(screenshot_filename)
         
-        # Random delay between requests (3-7 seconds)
-        delay = 3 + (time.time() % 4)
+        # Random delay between requests (0-4 seconds)
+        delay = 0 + (time.time() % 4)
         print(f"  ⏱️  Waiting {delay:.1f} seconds...\n")
         time.sleep(delay)
         

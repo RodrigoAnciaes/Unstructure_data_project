@@ -174,7 +174,7 @@ def scrape_single_marketplace(driver, marketplace, product_name, product_display
         scraping_progress[session_id]['results'].append(result)
         
         # Random delay
-        delay = 3 + (time.time() % 4)
+        delay = 0 + (time.time() % 4)
         time.sleep(delay)
         
         return result
