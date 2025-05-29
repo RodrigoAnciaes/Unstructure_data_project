@@ -1,7 +1,7 @@
-timestamp,product,marketplace,title,price,url
-2025-05-29 11:47:00.733530,Notebook,KaBuM,"MacBook Air Apple 13"", M1, CPU 8 Núcleos, GPU 7 Núcleos, 8GB RAM, SSD 256GB, Cinza Espacial - MGN63BZ/A","R$ 5.899,00",https://www.kabum.com.br/busca/notebook
-2025-05-29 11:47:10.133515,Notebook,Magazine Luiza,"Notebook Samsung Galaxy Book4, Windows 11 Home, Intel Core i7, 16GB, 512GB SSD, 15.6'' Full HD LED, 1.55 kg","ou R$ 5.819,03",https://www.magazineluiza.com.br/busca/notebook/
-2025-05-29 11:47:17.028190,Notebook,Mercado Livre (Search 1),Notebook Lenovo Thinkpad T480 14 I5 8ª 8gb Ssd 256gb,1.779,https://lista.mercadolivre.com.br/notebook#D[A:notebook]
-2025-05-29 11:47:25.067143,Notebook,Lenovo Brasil,"IdeaPad 1i Intel Core i5-1235U 12GB 512GB SSD Linux 15,6"" HD","R$2.816,99",https://www.lenovo.com/br/pt/search?fq=&text=notebook&rows=20&sort=relevance
-2025-05-29 11:47:31.985144,Notebook,Dell Brasil,Notebook Inspiron 15,"Preço
-R$ 3.998,00",https://www.dell.com/pt-br/search/notebook
+timestamp,product,marketplace,title,raw_price_text,price,url
+2025-05-29 12:00:30.414446,Notebook,KaBuM,"MacBook Air Apple 13"", M1, CPU 8 Núcleos, GPU 7 Núcleos, 8GB RAM, SSD 256GB, Cinza Espacial - MGN63BZ/A","R$ 5.899,00",5899.0,https://www.kabum.com.br/busca/notebook
+2025-05-29 12:00:41.893596,Notebook,Magazine Luiza,"Notebook Samsung Chromebook XE310XDA-KS2BR Intel Celeron N4020 4GB 32 GB eMMC Tela 11,6 Polegadas HD LED Antirreflexo Chrome OS","ou R$ 1.399,00",1399.0,https://www.magazineluiza.com.br/busca/notebook/
+2025-05-29 12:00:48.461508,Notebook,Mercado Livre (Search 1),Notebook Lenovo Thinkpad T480 14 I5 8ª 8gb Ssd 256gb,1.779,1779.0,https://lista.mercadolivre.com.br/notebook#D[A:notebook]
+2025-05-29 12:00:55.736853,Notebook,Lenovo Brasil,"IdeaPad 1i Intel Core i5-1235U 12GB 512GB SSD Linux 15,6"" HD","R$2.816,99",2816.99,https://www.lenovo.com/br/pt/search?fq=&text=notebook&rows=20&sort=relevance
+2025-05-29 12:01:05.570729,Notebook,Dell Brasil,Notebook Inspiron 15,"Preço
+R$ 3.998,00",3998.0,https://www.dell.com/pt-br/search/notebook

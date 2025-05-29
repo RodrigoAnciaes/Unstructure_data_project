@@ -1,5 +1,6 @@
 import pandas as pd
 import time
+import re
 from datetime import datetime
 import os
 from selenium import webdriver
@@ -16,6 +17,86 @@ if not os.path.exists("debug"):
     os.makedirs("debug")
 if not os.path.exists("summary"):
     os.makedirs("summary")
+
+# Function to extract and normalize price from text
+def extract_price(price_text):
+    """
+    Extract price as float from various Brazilian price formats.
+    
+    Args:
+        price_text (str): Raw price text from website
+        
+    Returns:
+        float: Normalized price value, or None if no price found
+    """
+    if not price_text or price_text.strip() == "Not found":
+        return None
+    
+    # Remove common Portuguese words and extra whitespace
+    cleaned_text = re.sub(r'\b(ou|preço|price|valor|de|por|até)\b', '', price_text.lower())
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+    
+    # Pattern to match Brazilian currency format
+    # Priority order matters - more specific patterns first
+    price_patterns = [
+        # Brazilian format with comma as decimal separator: R$ 1.234,56 or 1.234,56
+        (r'r\$?\s*(\d{1,3}(?:\.\d{3})*),(\d{2})', 'brazilian_comma'),
+        (r'(\d{1,3}(?:\.\d{3})*),(\d{2})', 'brazilian_comma'),
+        
+        # US format with dot as decimal separator, but only if it has exactly 2 digits after dot: 1234.56
+        (r'(\d+)\.(\d{2})(?!\d)', 'us_decimal'),
+        
+        # Numbers with dots as thousand separators (no decimal): 1.779 -> 1779
+        (r'(\d{1,3}(?:\.\d{3})+)(?!\d)', 'thousand_separator'),
+        
+        # Plain numbers without separators: 1779
+        (r'(\d+)', 'plain_number')
+    ]
+    
+    for pattern, format_type in price_patterns:
+        match = re.search(pattern, cleaned_text)
+        if match:
+            if format_type == 'brazilian_comma':
+                # Brazilian format: 1.234,56
+                integer_part = match.group(1).replace('.', '')  # Remove thousand separators
+                decimal_part = match.group(2)
+                price_value = float(f"{integer_part}.{decimal_part}")
+                return price_value
+                
+            elif format_type == 'us_decimal':
+                # US format: 1234.56 (only when exactly 2 decimal digits)
+                price_value = float(f"{match.group(1)}.{match.group(2)}")
+                return price_value
+                
+            elif format_type == 'thousand_separator':
+                # Numbers like 1.779 where dots are thousand separators
+                number_str = match.group(1).replace('.', '')  # Remove dots
+                price_value = float(number_str)
+                return price_value
+                
+            elif format_type == 'plain_number':
+                # Just numbers
+                price_value = float(match.group(1))
+                return price_value
+    
+    # Final fallback: extract all numbers and use the largest one
+    numbers = re.findall(r'\d+', cleaned_text)
+    if numbers:
+        # Convert to integers and find the largest (most likely the price)
+        number_values = [int(num) for num in numbers]
+        largest_number = max(number_values)
+        
+        # If the largest number seems too small for a laptop price, 
+        # try to combine numbers intelligently
+        if largest_number < 100 and len(numbers) > 1:
+            # Try to construct a price from multiple parts
+            combined = ''.join(numbers)
+            if len(combined) >= 3:  # Reasonable price length
+                return float(combined)
+        
+        return float(largest_number)
+    
+    return None
 
 # List of products to track
 products_to_track = [
@@ -116,12 +197,16 @@ def scrape_marketplaces():
                         title = "Not found"
                     
                     # Extract the price
+                    price_text = "Not found"
+                    price_value = None
                     try:
                         price_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["price_selector"])))
                         price_text = price_element.text.strip()
+                        # Extract and normalize the price
+                        price_value = extract_price(price_text)
+                        print(f"Raw price text: '{price_text}' -> Normalized: {price_value}")
                     except TimeoutException:
                         print(f"Price element not found for {marketplace['name']}")
-                        price_text = "Not found"
                     
                     # Add to results
                     results.append({
@@ -129,11 +214,12 @@ def scrape_marketplaces():
                         "product": product["name"],
                         "marketplace": marketplace["name"],
                         "title": title,
-                        "price": price_text,
+                        "raw_price_text": price_text,  # Keep original for debugging
+                        "price": price_value,  # Normalized price as float
                         "url": url
                     })
                     
-                    print(f"Found: {title} - {price_text}")
+                    print(f"Found: {title} - R$ {price_value:.2f}" if price_value else f"Found: {title} - Price not found")
                     
                     # Take a screenshot for visual verification
                     driver.save_screenshot(f"debug/{marketplace['name']}_{product['name']}_screenshot.png")
@@ -161,7 +247,18 @@ if __name__ == "__main__":
         df = pd.DataFrame(results)
         print("\nResults summary:")
         print(df[["product", "marketplace", "title", "price"]])
+        
+        # Save with both raw and normalized price data
         df.to_csv("summary/brazil_laptop_price_comparison.csv", index=False)
+        
+        # Create a summary with only valid prices for analysis
+        valid_prices_df = df[df['price'].notna()].copy()
+        if not valid_prices_df.empty:
+            print(f"\nPrice statistics (valid prices only):")
+            print(f"Average price: R$ {valid_prices_df['price'].mean():.2f}")
+            print(f"Minimum price: R$ {valid_prices_df['price'].min():.2f}")
+            print(f"Maximum price: R$ {valid_prices_df['price'].max():.2f}")
+            
         print("\nScraping completed! Results saved to summary/brazil_laptop_price_comparison.csv")
     else:
         print("No results were found. Check the debug files for more information.")
