@@ -1,7 +1,19 @@
 timestamp,product,marketplace,title,raw_price_text,price,url
-2025-05-29 12:00:30.414446,Notebook,KaBuM,"MacBook Air Apple 13"", M1, CPU 8 Núcleos, GPU 7 Núcleos, 8GB RAM, SSD 256GB, Cinza Espacial - MGN63BZ/A","R$ 5.899,00",5899.0,https://www.kabum.com.br/busca/notebook
-2025-05-29 12:00:41.893596,Notebook,Magazine Luiza,"Notebook Samsung Chromebook XE310XDA-KS2BR Intel Celeron N4020 4GB 32 GB eMMC Tela 11,6 Polegadas HD LED Antirreflexo Chrome OS","ou R$ 1.399,00",1399.0,https://www.magazineluiza.com.br/busca/notebook/
-2025-05-29 12:00:48.461508,Notebook,Mercado Livre (Search 1),Notebook Lenovo Thinkpad T480 14 I5 8ª 8gb Ssd 256gb,1.779,1779.0,https://lista.mercadolivre.com.br/notebook#D[A:notebook]
-2025-05-29 12:00:55.736853,Notebook,Lenovo Brasil,"IdeaPad 1i Intel Core i5-1235U 12GB 512GB SSD Linux 15,6"" HD","R$2.816,99",2816.99,https://www.lenovo.com/br/pt/search?fq=&text=notebook&rows=20&sort=relevance
-2025-05-29 12:01:05.570729,Notebook,Dell Brasil,Notebook Inspiron 15,"Preço
+2025-05-29 12:12:22.353677,Notebook,KaBuM,"MacBook Air Apple 13"", M1, CPU 8 Núcleos, GPU 7 Núcleos, 8GB RAM, SSD 256GB, Cinza Espacial - MGN63BZ/A","R$ 5.899,00",5899.0,https://www.kabum.com.br/busca/notebook
+2025-05-29 12:12:33.836580,Notebook,Magazine Luiza,"Notebook Samsung Chromebook XE310XDA-KS2BR Intel Celeron N4020 4GB 32 GB eMMC Tela 11,6 Polegadas HD LED Antirreflexo Chrome OS","ou R$ 1.399,00",1399.0,https://www.magazineluiza.com.br/busca/notebook/
+2025-05-29 12:12:40.388561,Notebook,Mercado Livre (Search 1),Notebook Lenovo Thinkpad T480 14 I5 8ª 8gb Ssd 256gb,1.779,1779.0,https://lista.mercadolivre.com.br/notebook#D[A:notebook]
+2025-05-29 12:12:50.392267,Notebook,Lenovo Brasil,"IdeaPad 1i Intel Core i5-1235U 12GB 512GB SSD Linux 15,6"" HD","R$2.816,99",2816.99,https://www.lenovo.com/br/pt/search?fq=&text=notebook&rows=20&sort=relevance
+2025-05-29 12:12:58.242719,Notebook,Dell Brasil,Notebook Inspiron 15,"Preço
 R$ 3.998,00",3998.0,https://www.dell.com/pt-br/search/notebook
+2025-05-29 12:13:08.407588,Laptop,KaBuM,"Ultrabook Asus Zenbook Duo 14, Intel Core Ultra 9-185h 5.1Ghz Turbo, 32GB RAM, SSD 1TB NVMe, Tela Touch de 14"", Windows 11 Home","R$ 16.660,00",16660.0,https://www.kabum.com.br/busca/laptop
+2025-05-29 12:13:19.266709,Laptop,Magazine Luiza,"Notebook Samsung Galaxy Book4, Windows 11 Home, Intel Core i7, 16GB, 512GB SSD, 15.6'' Full HD LED, 1.55 kg","ou R$ 5.819,03",5819.03,https://www.magazineluiza.com.br/busca/laptop/
+2025-05-29 12:13:52.512668,Laptop,Lenovo Brasil,Not found,Not found,,https://www.lenovo.com/br/pt/search?fq=&text=laptop&rows=20&sort=relevance
+2025-05-29 12:13:58.367808,Laptop,Dell Brasil,Notebook Inspiron 15,"Preço
+R$ 3.998,00",3998.0,https://www.dell.com/pt-br/search/laptop
+2025-05-29 12:14:06.363568,Lenovo Laptop,KaBuM,"Lenovo - Laptop Ideapad Flex 3i Chromebook - Tela Sensível Ao Toque Wuxga De 12,2"" - Intel N100 Com 4 Gb - 64 Gb Emmc - Abyss Blue-82xh0001us","R$ 6.554,27",6554.27,https://www.kabum.com.br/busca/lenovo laptop
+2025-05-29 12:14:19.064854,Lenovo Laptop,Magazine Luiza,Notebook Lenovo IdeaPad 1 15IAU7 Intel Core i5-1235U 8GB 512SSD 15.6 Windows 11 Cloud Grey,"ou R$ 3.443,33",3443.33,https://www.magazineluiza.com.br/busca/lenovo laptop/
+2025-05-29 12:14:27.220677,Lenovo Laptop,Mercado Livre (Search 1),Notebook Lenovo LOQ-e 15iax9e Intel Core i5-12450hx 16gb 512gb Ssd Rtx 3050 Windows 11 15.6 - 83me0007br Luna Grey,6.180,6180.0,https://lista.mercadolivre.com.br/lenovo laptop#D[A:lenovo laptop]
+2025-05-29 12:14:35.777546,Lenovo Laptop,Mercado Livre (Search 2),Notebook Lenovo LOQ-e 15iax9e Intel Core i5-12450hx 16gb 512gb Ssd Rtx 3050 Windows 11 15.6 - 83me0007br Luna Grey,6.180,6180.0,https://lista.mercadolivre.com.br/lenovo laptop?sb=all_mercadolibre#D[A:lenovo laptop]
+2025-05-29 12:14:45.712006,Lenovo Laptop,Lenovo Brasil,"Maleta casual T210 para laptop Lenovo de 15,6 pol.","R$114,39",114.39,https://www.lenovo.com/br/pt/search?fq=&text=lenovo laptop&rows=20&sort=relevance
+2025-05-29 12:14:53.493340,Lenovo Laptop,Dell Brasil,Notebook Inspiron 15,"Preço
+R$ 3.998,00",3998.0,https://www.dell.com/pt-br/search/lenovo laptop

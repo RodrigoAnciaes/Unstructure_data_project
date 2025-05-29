@@ -3,6 +3,7 @@ import time
 import re
 from datetime import datetime
 import os
+import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -98,10 +99,42 @@ def extract_price(price_text):
     
     return None
 
-# List of products to track
-products_to_track = [
-    {"name": "Notebook", "search_term": "notebook"}
-]
+def get_product_input():
+    """
+    Get product name from user input with validation.
+    
+    Returns:
+        str: Product name to search for
+    """
+    print("=== Brazilian Marketplace Price Scraper ===")
+    print("This tool will search for products across multiple Brazilian marketplaces.")
+    print("Examples: notebook, smartphone, tablet, mouse, teclado, monitor, etc.\n")
+    
+    while True:
+        product_name = input("Enter the product you want to search for: ").strip()
+        
+        if not product_name:
+            print("❌ Product name cannot be empty. Please try again.\n")
+            continue
+        
+        if len(product_name) < 2:
+            print("❌ Product name too short. Please enter at least 2 characters.\n")
+            continue
+        
+        # Convert to lowercase for search
+        product_name = product_name.lower()
+        
+        # Confirm with user
+        print(f"\n📦 You want to search for: '{product_name}'")
+        confirm = input("Is this correct? (y/n): ").strip().lower()
+        
+        if confirm in ['y', 'yes', 's', 'sim']:
+            return product_name
+        elif confirm in ['n', 'no', 'nao', 'não']:
+            print("Let's try again.\n")
+            continue
+        else:
+            print("Please answer with 'y' for yes or 'n' for no.\n")
 
 # Brazilian marketplaces with their specific URL formats and CSS selectors
 marketplaces = [
@@ -160,77 +193,95 @@ def setup_driver():
     return driver
 
 # Main scraping function
-def scrape_marketplaces():
+def scrape_marketplaces(product_name, product_display_name=None):
+    """
+    Scrape marketplaces for the given product.
+    
+    Args:
+        product_name (str): The product name to search for
+        product_display_name (str): Display name for the product (optional)
+    
+    Returns:
+        list: List of scraped product data
+    """
+    if product_display_name is None:
+        product_display_name = product_name.title()
+    
     results = []
     driver = setup_driver()
     
+    print(f"\n🔍 Starting to scrape '{product_display_name}' from {len(marketplaces)} marketplaces...")
+    print("=" * 60)
+    
     try:
-        for product in products_to_track:
-            for marketplace in marketplaces:
+        for i, marketplace in enumerate(marketplaces, 1):
+            try:
+                print(f"[{i}/{len(marketplaces)}] Scraping {marketplace['name']}...")
+                
+                # Format the URL with the search term
+                if "mercadolivre" in marketplace["search_url"]:
+                    # Handle Mercado Livre's special URL format
+                    url = marketplace["search_url"].format(product_name, product_name)
+                else:
+                    url = marketplace["search_url"].format(product_name)
+                
+                # Navigate to the URL
+                driver.get(url)
+                
+                # Wait for page to load (adjust timeout as needed)
+                wait = WebDriverWait(driver, 10)
+                
+                # Save the page source to a file for debugging
+                debug_filename = f"debug/{marketplace['name']}_{product_name}_debug.html"
+                with open(debug_filename, "w", encoding="utf-8") as f:
+                    f.write(driver.page_source)
+                
+                # Extract the first product title - wait for it to appear
                 try:
-                    print(f"Scraping {product['name']} from {marketplace['name']}...")
-                    
-                    # Format the URL with the search term
-                    if "mercadolivre" in marketplace["search_url"]:
-                        # Handle Mercado Livre's special URL format
-                        url = marketplace["search_url"].format(product["search_term"], product["search_term"])
+                    title_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["title_selector"])))
+                    title = title_element.text.strip()
+                    print(f"  ✅ Found product: {title[:80]}{'...' if len(title) > 80 else ''}")
+                except TimeoutException:
+                    print(f"  ❌ Title element not found")
+                    title = "Not found"
+                
+                # Extract the price
+                price_text = "Not found"
+                price_value = None
+                try:
+                    price_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["price_selector"])))
+                    price_text = price_element.text.strip()
+                    # Extract and normalize the price
+                    price_value = extract_price(price_text)
+                    if price_value:
+                        print(f"  💰 Price: R$ {price_value:.2f}")
                     else:
-                        url = marketplace["search_url"].format(product["search_term"])
-                    
-                    # Navigate to the URL
-                    driver.get(url)
-                    
-                    # Wait for page to load (adjust timeout as needed)
-                    wait = WebDriverWait(driver, 10)
-                    
-                    # Save the page source to a file for debugging
-                    with open(f"debug/{marketplace['name']}_{product['name']}_debug.html", "w", encoding="utf-8") as f:
-                        f.write(driver.page_source)
-                        print(f"Debug information saved to debug/{marketplace['name']}_{product['name']}_debug.html")
-                    
-                    # Extract the first product title - wait for it to appear
-                    try:
-                        title_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["title_selector"])))
-                        title = title_element.text.strip()
-                    except TimeoutException:
-                        print(f"Title element not found for {marketplace['name']}")
-                        title = "Not found"
-                    
-                    # Extract the price
-                    price_text = "Not found"
-                    price_value = None
-                    try:
-                        price_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["price_selector"])))
-                        price_text = price_element.text.strip()
-                        # Extract and normalize the price
-                        price_value = extract_price(price_text)
-                        print(f"Raw price text: '{price_text}' -> Normalized: {price_value}")
-                    except TimeoutException:
-                        print(f"Price element not found for {marketplace['name']}")
-                    
-                    # Add to results
-                    results.append({
-                        "timestamp": datetime.now(),
-                        "product": product["name"],
-                        "marketplace": marketplace["name"],
-                        "title": title,
-                        "raw_price_text": price_text,  # Keep original for debugging
-                        "price": price_value,  # Normalized price as float
-                        "url": url
-                    })
-                    
-                    print(f"Found: {title} - R$ {price_value:.2f}" if price_value else f"Found: {title} - Price not found")
-                    
-                    # Take a screenshot for visual verification
-                    driver.save_screenshot(f"debug/{marketplace['name']}_{product['name']}_screenshot.png")
-                    
-                    # Random delay between requests (3-7 seconds)
-                    delay = 3 + (time.time() % 4)
-                    print(f"Waiting {delay:.1f} seconds before next request...")
-                    time.sleep(delay)
-                    
-                except Exception as e:
-                    print(f"Error scraping {product['name']} from {marketplace['name']}: {e}")
+                        print(f"  ⚠️  Could not parse price: '{price_text}'")
+                except TimeoutException:
+                    print(f"  ❌ Price element not found")
+                
+                # Add to results
+                results.append({
+                    "timestamp": datetime.now(),
+                    "product": product_display_name,
+                    "marketplace": marketplace["name"],
+                    "title": title,
+                    "raw_price_text": price_text,  # Keep original for debugging
+                    "price": price_value,  # Normalized price as float
+                    "url": url
+                })
+                
+                # Take a screenshot for visual verification
+                screenshot_filename = f"debug/{marketplace['name']}_{product_name}_screenshot.png"
+                driver.save_screenshot(screenshot_filename)
+                
+                # Random delay between requests (3-7 seconds)
+                delay = 3 + (time.time() % 4)
+                print(f"  ⏱️  Waiting {delay:.1f} seconds...\n")
+                time.sleep(delay)
+                
+            except Exception as e:
+                print(f"  ❌ Error scraping {marketplace['name']}: {e}\n")
     
     finally:
         # Always close the driver properly
@@ -238,27 +289,93 @@ def scrape_marketplaces():
     
     return results
 
-if __name__ == "__main__":
-    # Run the scraper
-    results = scrape_marketplaces()
+def display_results_summary(df, product_name):
+    """
+    Display a nice summary of the scraping results.
     
-    # Convert to DataFrame and save
-    if results:
-        df = pd.DataFrame(results)
-        print("\nResults summary:")
-        print(df[["product", "marketplace", "title", "price"]])
+    Args:
+        df (DataFrame): Results dataframe
+        product_name (str): Name of the product searched
+    """
+    print("\n" + "=" * 60)
+    print(f"📊 SCRAPING RESULTS SUMMARY FOR: {product_name.upper()}")
+    print("=" * 60)
+    
+    if df.empty:
+        print("❌ No results were found. Check the debug files for more information.")
+        return
+    
+    # Count successful vs failed scrapes
+    total_attempts = len(df)
+    successful_titles = len(df[df['title'] != 'Not found'])
+    successful_prices = len(df[df['price'].notna()])
+    
+    print(f"🎯 Total marketplaces scraped: {total_attempts}")
+    print(f"✅ Products found: {successful_titles}/{total_attempts}")
+    print(f"💰 Prices found: {successful_prices}/{total_attempts}")
+    print()
+    
+    # Display individual results
+    for _, row in df.iterrows():
+        status_icon = "✅" if row['title'] != 'Not found' else "❌"
+        price_text = f"R$ {row['price']:.2f}" if pd.notna(row['price']) else "Price not found"
         
-        # Save with both raw and normalized price data
-        df.to_csv("summary/brazil_laptop_price_comparison.csv", index=False)
+        print(f"{status_icon} {row['marketplace']}: {price_text}")
+        if row['title'] != 'Not found':
+            title_display = row['title'][:70] + "..." if len(row['title']) > 70 else row['title']
+            print(f"    📦 {title_display}")
+        print()
+    
+    # Price statistics
+    valid_prices_df = df[df['price'].notna()].copy()
+    if not valid_prices_df.empty:
+        print("📈 PRICE STATISTICS:")
+        print(f"   Average: R$ {valid_prices_df['price'].mean():.2f}")
+        print(f"   Minimum: R$ {valid_prices_df['price'].min():.2f}")
+        print(f"   Maximum: R$ {valid_prices_df['price'].max():.2f}")
         
-        # Create a summary with only valid prices for analysis
-        valid_prices_df = df[df['price'].notna()].copy()
-        if not valid_prices_df.empty:
-            print(f"\nPrice statistics (valid prices only):")
-            print(f"Average price: R$ {valid_prices_df['price'].mean():.2f}")
-            print(f"Minimum price: R$ {valid_prices_df['price'].min():.2f}")
-            print(f"Maximum price: R$ {valid_prices_df['price'].max():.2f}")
+        # Find best deal
+        cheapest = valid_prices_df.loc[valid_prices_df['price'].idxmin()]
+        print(f"   🏆 Best deal: {cheapest['marketplace']} - R$ {cheapest['price']:.2f}")
+
+def main():
+    """
+    Main function to run the scraper with user input.
+    """
+    try:
+        # Get product name from user
+        product_name = get_product_input()
+        
+        # Create a display-friendly version
+        product_display_name = product_name.title()
+        
+        # Run the scraper
+        results = scrape_marketplaces(product_name, product_display_name)
+        
+        # Convert to DataFrame and save
+        if results:
+            df = pd.DataFrame(results)
             
-        print("\nScraping completed! Results saved to summary/brazil_laptop_price_comparison.csv")
-    else:
-        print("No results were found. Check the debug files for more information.")
+            # Save with timestamp in filename
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"summary/{product_name}_{timestamp}_price_comparison.csv"
+            df.to_csv(filename, index=False)
+            
+            # Display results
+            display_results_summary(df, product_display_name)
+            
+            print(f"\n💾 Results saved to: {filename}")
+            print(f"🔍 Debug files saved to: debug/ folder")
+            
+        else:
+            print("\n❌ No results were found. Check the debug files for more information.")
+            
+    except KeyboardInterrupt:
+        print("\n\n⚠️  Scraping interrupted by user.")
+        print("Any partial results have been saved.")
+    except Exception as e:
+        print(f"\n❌ An error occurred: {e}")
+        print("Check the debug files for more information.")
+
+if __name__ == "__main__":
+    main()
