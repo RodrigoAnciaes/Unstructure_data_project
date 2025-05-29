@@ -179,17 +179,59 @@ marketplaces = [
 # Set up the Selenium WebDriver with headless options
 def setup_driver():
     chrome_options = Options()
+    
+    # Basic headless configuration
     chrome_options.add_argument("--headless")  # Run in headless mode
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
     
+    # GPU and WebGL related options to suppress warnings
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-software-rasterizer")
+    chrome_options.add_argument("--disable-webgl")
+    chrome_options.add_argument("--disable-webgl2")
+    chrome_options.add_argument("--disable-3d-apis")
+    chrome_options.add_argument("--disable-accelerated-2d-canvas")
+    chrome_options.add_argument("--disable-accelerated-jpeg-decoding")
+    chrome_options.add_argument("--disable-accelerated-mjpeg-decode")
+    chrome_options.add_argument("--disable-accelerated-video-decode")
+    chrome_options.add_argument("--disable-accelerated-video-encode")
+    chrome_options.add_argument("--disable-gpu-process-crash-limit")
+    chrome_options.add_argument("--disable-gpu-sandbox")
+    
+    # Additional options to reduce noise and improve stability
+    chrome_options.add_argument("--disable-logging")
+    chrome_options.add_argument("--disable-background-timer-throttling")
+    chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+    chrome_options.add_argument("--disable-renderer-backgrounding")
+    chrome_options.add_argument("--disable-features=TranslateUI")
+    chrome_options.add_argument("--disable-web-security")
+    chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+    
+    # Memory and performance optimizations
+    chrome_options.add_argument("--memory-pressure-off")
+    chrome_options.add_argument("--max_old_space_size=4096")
+    
+    # Suppress specific error messages
+    chrome_options.add_argument("--log-level=3")  # Suppress INFO, WARNING, and ERROR
+    chrome_options.add_argument("--silent")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-plugins")
+    
     # Add realistic user agent
-    chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+    chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+    
+    # Disable unnecessary features for scraping
+    chrome_options.add_argument("--disable-images")  # Don't load images (faster)
+    # Note: Don't disable JavaScript as many sites need it for content loading
+    
+    # Set up Chrome service with minimal logging
+    service = Service(ChromeDriverManager().install())
+    service.log_path = os.devnull  # Suppress ChromeDriver logs
     
     # Initialize the webdriver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
 # Main scraping function
