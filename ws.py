@@ -28,31 +28,31 @@ marketplaces = [
         "name": "KaBuM",
         "search_url": "https://www.kabum.com.br/busca/{}",
         "price_selector": ".sc-57f0fd6e-2.hjJfoh.priceCard",  # Updated selector
-        "title_selector": ".sc-d99ca57-0.iRparH",
+        "title_selector": ".nameCard",
     },
     {
         "name": "Magazine Luiza",
         "search_url": "https://www.magazineluiza.com.br/busca/{}/",
         "price_selector": "[data-testid='price-value']",  # Updated selector
-        "title_selector": ".productTitle",
+        "title_selector": 'h2[data-testid="product-title"]',
     },
     {
         "name": "Mercado Livre (Search 1)",
         "search_url": "https://lista.mercadolivre.com.br/{}#D[A:{}]",
         "price_selector": ".andes-money-amount__fraction",
-        "title_selector": ".ui-search-item__title",
+        "title_selector": "a.poly-component__title",
     },
     {
         "name": "Mercado Livre (Search 2)",
         "search_url": "https://lista.mercadolivre.com.br/{}?sb=all_mercadolibre#D[A:{}]",
         "price_selector": ".andes-money-amount__fraction",
-        "title_selector": ".ui-search-item__title",
+        "title_selector": "a.poly-component__title",
     },
     {
         "name": "Lenovo Brasil",
         "search_url": "https://www.lenovo.com/br/pt/search?fq=&text={}&rows=20&sort=relevance",
-        "price_selector": ".price-title",  # Updated selector
-        "title_selector": ".product-name",
+        "price_selector": ".price-title",
+        "title_selector": 'a[id^="pc-title_"]',
     },
     {
         "name": "Dell Brasil",
