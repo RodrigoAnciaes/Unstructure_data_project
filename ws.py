@@ -151,18 +151,6 @@ marketplaces = [
         "title_selector": 'h2[data-testid="product-title"]',
     },
     {
-        "name": "Mercado Livre (Search 1)",
-        "search_url": "https://lista.mercadolivre.com.br/{}#D[A:{}]",
-        "price_selector": ".andes-money-amount__fraction",
-        "title_selector": "a.poly-component__title",
-    },
-    {
-        "name": "Mercado Livre (Search 2)",
-        "search_url": "https://lista.mercadolivre.com.br/{}?sb=all_mercadolibre#D[A:{}]",
-        "price_selector": ".andes-money-amount__fraction",
-        "title_selector": "a.poly-component__title",
-    },
-    {
         "name": "Lenovo Brasil",
         "search_url": "https://www.lenovo.com/br/pt/search?fq=&text={}&rows=20&sort=relevance",
         "price_selector": ".price-title",
@@ -234,6 +222,129 @@ def setup_driver():
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
+# Function to scrape a single marketplace
+def scrape_single_marketplace(driver, marketplace, product_name, product_display_name, marketplace_index, total_marketplaces):
+    """
+    Scrape a single marketplace and return the result.
+    
+    Returns:
+        dict or None: Product data if successful, None if failed
+    """
+    try:
+        print(f"[{marketplace_index}/{total_marketplaces}] Scraping {marketplace['name']}...")
+        
+        # Format the URL with the search term
+        if "mercadolivre" in marketplace["search_url"]:
+            # Handle Mercado Livre's special URL format
+            url = marketplace["search_url"].format(product_name, product_name)
+        else:
+            url = marketplace["search_url"].format(product_name)
+        
+        # Navigate to the URL
+        driver.get(url)
+        
+        # Wait for page to load (adjust timeout as needed)
+        wait = WebDriverWait(driver, 10)
+        
+        # Save the page source to a file for debugging
+        debug_filename = f"debug/{marketplace['name'].replace(' ', '_')}_{product_name}_debug.html"
+        with open(debug_filename, "w", encoding="utf-8") as f:
+            f.write(driver.page_source)
+        
+        # Extract the first product title - wait for it to appear
+        try:
+            title_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["title_selector"])))
+            title = title_element.text.strip()
+            print(f"  ✅ Found product: {title[:80]}{'...' if len(title) > 80 else ''}")
+        except TimeoutException:
+            print(f"  ❌ Title element not found")
+            title = "Not found"
+        
+        # Extract the price
+        price_text = "Not found"
+        price_value = None
+        try:
+            price_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["price_selector"])))
+            price_text = price_element.text.strip()
+            # Extract and normalize the price
+            price_value = extract_price(price_text)
+            if price_value:
+                print(f"  💰 Price: R$ {price_value:.2f}")
+            else:
+                print(f"  ⚠️  Could not parse price: '{price_text}'")
+        except TimeoutException:
+            print(f"  ❌ Price element not found")
+        
+        # Create result
+        result = {
+            "timestamp": datetime.now(),
+            "product": product_display_name,
+            "marketplace": marketplace["name"],
+            "title": title,
+            "raw_price_text": price_text,
+            "price": price_value,
+            "url": url
+        }
+        
+        # Take a screenshot for visual verification
+        screenshot_filename = f"debug/{marketplace['name'].replace(' ', '_')}_{product_name}_screenshot.png"
+        driver.save_screenshot(screenshot_filename)
+        
+        # Random delay between requests (3-7 seconds)
+        delay = 3 + (time.time() % 4)
+        print(f"  ⏱️  Waiting {delay:.1f} seconds...\n")
+        time.sleep(delay)
+        
+        return result
+        
+    except Exception as e:
+        print(f"  ❌ Error scraping {marketplace['name']}: {str(e)[:100]}{'...' if len(str(e)) > 100 else ''}\n")
+        return None
+
+# Function to handle Mercado Livre searches specially
+def scrape_mercado_livre(driver, product_name, product_display_name, marketplace_index, total_marketplaces):
+    """
+    Try both Mercado Livre search methods and return the first successful one.
+    
+    Returns:
+        dict or None: Product data if any search succeeded, None if both failed
+    """
+    mercado_livre_searches = [
+        {
+            "name": "Mercado Livre (Search 1)",
+            "search_url": "https://lista.mercadolivre.com.br/{}#D[A:{}]",
+            "price_selector": ".andes-money-amount__fraction",
+            "title_selector": "a.poly-component__title",
+        },
+        {
+            "name": "Mercado Livre (Search 2)",
+            "search_url": "https://lista.mercadolivre.com.br/{}?sb=all_mercadolibre#D[A:{}]",
+            "price_selector": ".andes-money-amount__fraction",
+            "title_selector": "a.poly-component__title",
+        }
+    ]
+    
+    print(f"[{marketplace_index}/{total_marketplaces}] Scraping Mercado Livre (trying multiple search methods)...")
+    
+    for i, search_config in enumerate(mercado_livre_searches, 1):
+        print(f"  🔄 Attempt {i}/2: {search_config['name']}")
+        
+        result = scrape_single_marketplace(
+            driver, search_config, product_name, product_display_name, 
+            f"{marketplace_index}.{i}", total_marketplaces
+        )
+        
+        if result and (result['title'] != 'Not found' or result['price'] is not None):
+            print(f"  ✅ Success with {search_config['name']}!")
+            # Update the marketplace name to just "Mercado Livre"
+            result['marketplace'] = "Mercado Livre"
+            return result
+        else:
+            print(f"  ⚠️  {search_config['name']} didn't return useful data, trying next method...")
+    
+    print(f"  ❌ All Mercado Livre search methods failed\n")
+    return None
+
 # Main scraping function
 def scrape_marketplaces(product_name, product_display_name=None):
     """
@@ -252,78 +363,29 @@ def scrape_marketplaces(product_name, product_display_name=None):
     results = []
     driver = setup_driver()
     
-    print(f"\n🔍 Starting to scrape '{product_display_name}' from {len(marketplaces)} marketplaces...")
+    # Filter out Mercado Livre searches since we'll handle them specially
+    regular_marketplaces = [m for m in marketplaces if "mercadolivre" not in m["search_url"]]
+    
+    total_sources = len(regular_marketplaces) + 1  # +1 for combined Mercado Livre
+    
+    print(f"\n🔍 Starting to scrape '{product_display_name}' from {total_sources} sources...")
     print("=" * 60)
     
     try:
-        for i, marketplace in enumerate(marketplaces, 1):
-            try:
-                print(f"[{i}/{len(marketplaces)}] Scraping {marketplace['name']}...")
-                
-                # Format the URL with the search term
-                if "mercadolivre" in marketplace["search_url"]:
-                    # Handle Mercado Livre's special URL format
-                    url = marketplace["search_url"].format(product_name, product_name)
-                else:
-                    url = marketplace["search_url"].format(product_name)
-                
-                # Navigate to the URL
-                driver.get(url)
-                
-                # Wait for page to load (adjust timeout as needed)
-                wait = WebDriverWait(driver, 10)
-                
-                # Save the page source to a file for debugging
-                debug_filename = f"debug/{marketplace['name']}_{product_name}_debug.html"
-                with open(debug_filename, "w", encoding="utf-8") as f:
-                    f.write(driver.page_source)
-                
-                # Extract the first product title - wait for it to appear
-                try:
-                    title_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["title_selector"])))
-                    title = title_element.text.strip()
-                    print(f"  ✅ Found product: {title[:80]}{'...' if len(title) > 80 else ''}")
-                except TimeoutException:
-                    print(f"  ❌ Title element not found")
-                    title = "Not found"
-                
-                # Extract the price
-                price_text = "Not found"
-                price_value = None
-                try:
-                    price_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, marketplace["price_selector"])))
-                    price_text = price_element.text.strip()
-                    # Extract and normalize the price
-                    price_value = extract_price(price_text)
-                    if price_value:
-                        print(f"  💰 Price: R$ {price_value:.2f}")
-                    else:
-                        print(f"  ⚠️  Could not parse price: '{price_text}'")
-                except TimeoutException:
-                    print(f"  ❌ Price element not found")
-                
-                # Add to results
-                results.append({
-                    "timestamp": datetime.now(),
-                    "product": product_display_name,
-                    "marketplace": marketplace["name"],
-                    "title": title,
-                    "raw_price_text": price_text,  # Keep original for debugging
-                    "price": price_value,  # Normalized price as float
-                    "url": url
-                })
-                
-                # Take a screenshot for visual verification
-                screenshot_filename = f"debug/{marketplace['name']}_{product_name}_screenshot.png"
-                driver.save_screenshot(screenshot_filename)
-                
-                # Random delay between requests (3-7 seconds)
-                delay = 3 + (time.time() % 4)
-                print(f"  ⏱️  Waiting {delay:.1f} seconds...\n")
-                time.sleep(delay)
-                
-            except Exception as e:
-                print(f"  ❌ Error scraping {marketplace['name']}: {e}\n")
+        # Scrape regular marketplaces
+        for i, marketplace in enumerate(regular_marketplaces, 1):
+            result = scrape_single_marketplace(
+                driver, marketplace, product_name, product_display_name, i, total_sources
+            )
+            if result:
+                results.append(result)
+        
+        # Handle Mercado Livre specially
+        mercado_result = scrape_mercado_livre(
+            driver, product_name, product_display_name, len(regular_marketplaces) + 1, total_sources
+        )
+        if mercado_result:
+            results.append(mercado_result)
     
     finally:
         # Always close the driver properly
