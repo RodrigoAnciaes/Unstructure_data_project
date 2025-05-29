@@ -1,15 +1,7 @@
 timestamp,product,marketplace,title,price,url
-2025-05-08 18:43:56.257690,Laptop,KaBuM,Not found,Not found,https://www.kabum.com.br/busca/laptop
-2025-05-08 18:44:02.329144,Laptop,Magazine Luiza,Not found,Not found,https://www.magazineluiza.com.br/busca/laptop/
-2025-05-08 18:44:10.136267,Laptop,Mercado Livre (Search 1),Not found,106,https://lista.mercadolivre.com.br/laptop#D[A:laptop]
-2025-05-08 18:44:17.171238,Laptop,Mercado Livre (Search 2),Not found,106,https://lista.mercadolivre.com.br/laptop?sb=all_mercadolibre#D[A:laptop]
-2025-05-08 18:44:21.996760,Laptop,Lenovo Brasil,Not found,Not found,https://www.lenovo.com/br/pt/search?fq=&text=laptop&rows=20&sort=relevance
-2025-05-08 18:44:27.939442,Laptop,Dell Brasil,Notebook Inspiron 15,"Preço
-R$ 3.598,00",https://www.dell.com/pt-br/search/laptop
-2025-05-08 18:44:35.956049,Notebook,KaBuM,Not found,Not found,https://www.kabum.com.br/busca/notebook
-2025-05-08 18:44:44.806930,Notebook,Magazine Luiza,Not found,Not found,https://www.magazineluiza.com.br/busca/notebook/
-2025-05-08 18:44:50.426968,Notebook,Mercado Livre (Search 1),Not found,3.199,https://lista.mercadolivre.com.br/notebook#D[A:notebook]
-2025-05-08 18:44:57.487381,Notebook,Mercado Livre (Search 2),Not found,3.199,https://lista.mercadolivre.com.br/notebook?sb=all_mercadolibre#D[A:notebook]
-2025-05-08 18:45:02.341717,Notebook,Lenovo Brasil,Not found,Not found,https://www.lenovo.com/br/pt/search?fq=&text=notebook&rows=20&sort=relevance
-2025-05-08 18:45:09.119149,Notebook,Dell Brasil,Notebook Inspiron 15,"Preço
-R$ 3.598,00",https://www.dell.com/pt-br/search/notebook
+2025-05-29 11:47:00.733530,Notebook,KaBuM,"MacBook Air Apple 13"", M1, CPU 8 Núcleos, GPU 7 Núcleos, 8GB RAM, SSD 256GB, Cinza Espacial - MGN63BZ/A","R$ 5.899,00",https://www.kabum.com.br/busca/notebook
+2025-05-29 11:47:10.133515,Notebook,Magazine Luiza,"Notebook Samsung Galaxy Book4, Windows 11 Home, Intel Core i7, 16GB, 512GB SSD, 15.6'' Full HD LED, 1.55 kg","ou R$ 5.819,03",https://www.magazineluiza.com.br/busca/notebook/
+2025-05-29 11:47:17.028190,Notebook,Mercado Livre (Search 1),Notebook Lenovo Thinkpad T480 14 I5 8ª 8gb Ssd 256gb,1.779,https://lista.mercadolivre.com.br/notebook#D[A:notebook]
+2025-05-29 11:47:25.067143,Notebook,Lenovo Brasil,"IdeaPad 1i Intel Core i5-1235U 12GB 512GB SSD Linux 15,6"" HD","R$2.816,99",https://www.lenovo.com/br/pt/search?fq=&text=notebook&rows=20&sort=relevance
+2025-05-29 11:47:31.985144,Notebook,Dell Brasil,Notebook Inspiron 15,"Preço
+R$ 3.998,00",https://www.dell.com/pt-br/search/notebook
